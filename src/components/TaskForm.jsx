@@ -2,13 +2,19 @@ import { useState } from "react";
 
 function TaskForm({ onAdd }) {
   const [title, setTitle] = useState("");
- 
-  function handleSubmit(e) {
-    e.preventDefault();
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault()
     const trimmed = title.trim();
     if (trimmed === "") return;
-    onAdd(trimmed);
-    setTitle("");
+    try {
+      await onAdd(trimmed);
+      setTitle("")
+      setError("");
+    } catch (err) {
+      setError(err.message);
+    }
   }
   return (
     <form className="task-form" onSubmit={handleSubmit}>
@@ -18,6 +24,7 @@ function TaskForm({ onAdd }) {
         placeholder="Title of a new task"
       />
       <button type="submit">Add task</button>
+      {error && <p className="error">{error}</p>}
     </form>
   );
 }
